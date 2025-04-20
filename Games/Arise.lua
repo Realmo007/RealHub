@@ -1,32 +1,53 @@
--- Simple UI Menu
-local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local Frame = Instance.new("Frame", ScreenGui)
-local Toggle = Instance.new("TextButton", Frame)
+-- Arise Crossover - Real Hub Auto Farm with UI
 
-ScreenGui.Name = "RealHubUI"
-Frame.Size = UDim2.new(0, 200, 0, 100)
-Frame.Position = UDim2.new(0, 50, 0, 100)
-Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
 
-Toggle.Size = UDim2.new(1, 0, 1, 0)
-Toggle.Text = "🔥 Toggle Auto Farm"
-Toggle.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+-- UI
+local ui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+ui.Name = "RealHubUI"
 
-local AutoFarm = false
+local btn = Instance.new("TextButton", ui)
+btn.Size = UDim2.new(0, 200, 0, 50)
+btn.Position = UDim2.new(0, 20, 0, 150)
+btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+btn.TextColor3 = Color3.new(1, 1, 1)
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 16
+btn.Text = "✅ เปิด Auto Farm"
 
-Toggle.MouseButton1Click:Connect(function()
-    AutoFarm = not AutoFarm
-    Toggle.Text = AutoFarm and "✅ Auto Farm: ON" or "❌ Auto Farm: OFF"
+local autofarm = false
+btn.MouseButton1Click:Connect(function()
+    autofarm = not autofarm
+    btn.Text = autofarm and "🛑 ปิด Auto Farm" or "✅ เปิด Auto Farm"
 end)
 
--- Auto Farm loop
+-- ฟังก์ชันหามอน
+local function getMob()
+    local nearest, dist = nil, math.huge
+    for _, mob in pairs(workspace:GetDescendants()) do
+        if mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") and mob.Humanoid.Health > 0 then
+            local d = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
+            if d < dist then
+                nearest = mob
+                dist = d
+            end
+        end
+    end
+    return nearest
+end
+
+-- วนลูปฟาม
 task.spawn(function()
     while task.wait(0.3) do
-        if AutoFarm then
+        if autofarm then
             local mob = getMob()
             if mob then
-                hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
-                mouse1click()
+                pcall(function()
+                    hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
+                    mouse1click()
+                end)
             end
         end
     end
