@@ -3,7 +3,7 @@
 
 local PlaceId = game.PlaceId
 
-if PlaceId == 123456789 then -- 👈 เปลี่ยนเป็น PlaceId จริงของ Arise Crossover
+if PlaceId == 87039211657390 then -- 👈 เปลี่ยนเป็น PlaceId จริงของ Arise Crossover
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Realmo007/RealHub/main/Games/Arise.lua"))()
 else
     warn("🔴 Game not supported yet by Real Hub")
