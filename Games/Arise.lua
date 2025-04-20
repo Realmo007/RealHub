@@ -1,58 +1,44 @@
--- Arise Crossover Auto Farm | Real Hub Edition
-
-local plr = game.Players.LocalPlayer
-local char = plr.Character or plr.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-
--- สร้าง UI
-local ui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-ui.Name = "RealHubUI"
-
-local btn = Instance.new("TextButton", ui)
-btn.Size = UDim2.new(0, 200, 0, 50)
-btn.Position = UDim2.new(0, 20, 0, 150)
-btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-btn.TextColor3 = Color3.new(1, 1, 1)
-btn.Font = Enum.Font.Gotham
-btn.TextSize = 16
-btn.Text = "✅ เปิด Auto Farm"
-
-local autofarm = false
-btn.MouseButton1Click:Connect(function()
-    autofarm = not autofarm
-    btn.Text = autofarm and "🛑 ปิด Auto Farm" or "✅ เปิด Auto Farm"
-end)
-
--- ฟังก์ชันหามอน
-local function getMob()
-    local nearest, dist = nil, math.huge
-
-    for _, mob in pairs(workspace:GetDescendants()) do
-        if mob:IsA("Model") and mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") then
-            if mob.Humanoid.Health > 0 then
-                local d = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
-                if d < dist then
-                    nearest = mob
-                    dist = d
-                end
-            end
+-- ฟังก์ชั่นนี้จะหามอนสเตอร์ในโฟลเดอร์ "Enemies.Client"
+local function findMonsters()
+    local monsters = {}
+    for _, v in pairs(workspace.__Main.Enemies.Client:GetChildren()) do
+        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+            table.insert(monsters, v)
         end
     end
-
-    return nearest
+    return monsters
 end
 
--- ลูปฟาร์ม
-task.spawn(function()
-    while task.wait(0.3) do
-        if autofarm then
-            local mob = getMob()
-            if mob then
-                pcall(function()
-                    hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 2)
-                    mouse1click()
-                end)
-            end
-        end
+-- ฟังก์ชั่นวาร์ปไปหามอนสเตอร์ใกล้ ๆ
+local function teleportToMonster(monster)
+    local hrp = monster:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        game.Players.LocalPlayer.Character:MoveTo(hrp.Position)
     end
-end)
+end
+
+-- ฟังก์ชั่นโจมตีมอนสเตอร์
+local function attackMonster(monster)
+    local humanoid = monster:FindFirstChild("Humanoid")
+    if humanoid and humanoid.Health > 0 then
+        -- โค้ดโจมตีหรือยิงมอนสเตอร์ (อาจจะใช้ RemoteEvent หรือการคลิกมอนสเตอร์)
+        fireclickdetector(monster.PrimaryPart:FindFirstChildOfClass("ClickDetector"))
+    end
+end
+
+-- ฟังก์ชั่นหลักที่จะทำงานในลูป
+local function autoFarm()
+    while true do
+        local monsters = findMonsters()  -- หา monster ทั้งหมด
+        if #monsters > 0 then
+            -- เลือกมอนสเตอร์แบบสุ่ม
+            local monster = monsters[math.random(1, #monsters)]
+            teleportToMonster(monster)  -- วาร์ปไปหามอนสเตอร์
+            attackMonster(monster)  -- ตีมอนสเตอร์
+        end
+        wait(1)  -- พัก 1 วินาที
+    end
+end
+
+-- เริ่มฟังก์ชั่น Auto Farm
+autoFarm()
