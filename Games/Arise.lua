@@ -21,8 +21,12 @@ end
 local function attackMonster(monster)
     local humanoid = monster:FindFirstChild("Humanoid")
     if humanoid and humanoid.Health > 0 then
-        -- โค้ดโจมตีหรือยิงมอนสเตอร์ (อาจจะใช้ RemoteEvent หรือการคลิกมอนสเตอร์)
-        fireclickdetector(monster.PrimaryPart:FindFirstChildOfClass("ClickDetector"))
+        -- ใช้ RemoteEvent หรือฟังก์ชั่นในการโจมตี
+        -- สมมุติว่าเรามี RemoteEvent ที่ชื่อว่า "AttackEvent" สำหรับการโจมตี
+        local attackEvent = game.ReplicatedStorage:WaitForChild("AttackEvent")
+        if attackEvent then
+            attackEvent:FireServer(monster)  -- ส่งคำสั่งให้โจมตีมอนสเตอร์
+        end
     end
 end
 
