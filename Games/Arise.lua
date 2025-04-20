@@ -1,10 +1,10 @@
--- Arise Crossover - Real Hub Auto Farm with UI
+-- Arise Crossover Auto Farm | Real Hub Edition
 
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
--- UI
+-- สร้าง UI
 local ui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 ui.Name = "RealHubUI"
 
@@ -26,19 +26,23 @@ end)
 -- ฟังก์ชันหามอน
 local function getMob()
     local nearest, dist = nil, math.huge
+
     for _, mob in pairs(workspace:GetDescendants()) do
-        if mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") and mob.Humanoid.Health > 0 then
-            local d = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
-            if d < dist then
-                nearest = mob
-                dist = d
+        if mob:IsA("Model") and mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") then
+            if mob.Humanoid.Health > 0 then
+                local d = (hrp.Position - mob.HumanoidRootPart.Position).Magnitude
+                if d < dist then
+                    nearest = mob
+                    dist = d
+                end
             end
         end
     end
+
     return nearest
 end
 
--- วนลูปฟาม
+-- ลูปฟาร์ม
 task.spawn(function()
     while task.wait(0.3) do
         if autofarm then
